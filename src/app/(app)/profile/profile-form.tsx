@@ -1,0 +1,127 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import type { UserProfile } from '@/lib/db';
+
+export default function ProfileForm({ profile }: { profile: UserProfile }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [fullName, setFullName] = useState(profile.full_name ?? '');
+  const [university, setUniversity] = useState(profile.university ?? '');
+  const [degree, setDegree] = useState(profile.degree ?? '');
+  const [graduationYear, setGraduationYear] = useState<number>(profile.graduation_year ?? new Date().getFullYear() + 1);
+  const [location, setLocation] = useState(profile.location ?? '');
+  const [interests, setInterests] = useState((profile.interests ?? []).join(', '));
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: fullName,
+          university,
+          degree,
+          graduation_year: graduationYear,
+          location,
+          interests: interests
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean),
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update profile');
+
+      router.refresh();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="bg-[#0f0f14] border border-[#1a1a21] rounded-2xl p-8 space-y-5">
+      <div>
+        <label className="block text-sm text-[#a0a0b0] mb-2">Full name</label>
+        <input
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-[#a0a0b0] mb-2">University</label>
+          <input
+            value={university}
+            onChange={(e) => setUniversity(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-[#a0a0b0] mb-2">Degree</label>
+          <input
+            value={degree}
+            onChange={(e) => setDegree(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm text-[#a0a0b0] mb-2">Graduation year</label>
+          <input
+            type="number"
+            value={graduationYear}
+            onChange={(e) => setGraduationYear(Number(e.target.value))}
+            className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+          />
+        </div>
+        <div>
+          <label className="block text-sm text-[#a0a0b0] mb-2">Location</label>
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm text-[#a0a0b0] mb-2">Interests</label>
+        <input
+          value={interests}
+          onChange={(e) => setInterests(e.target.value)}
+          className="w-full px-4 py-3 rounded-xl bg-[#1a1a21] border border-[#2a2a35] text-white focus:outline-none focus:border-indigo-500/50"
+        />
+        <p className="mt-2 text-xs text-[#6a6a7a]">Comma-separated.</p>
+      </div>
+
+      {error && (
+        <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl p-3">
+          {error}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white text-[#0c0c0f] font-semibold hover:bg-[#f0f0f5] transition-colors disabled:opacity-50"
+      >
+        {loading ? 'Saving…' : 'Save changes'}
+      </button>
+    </form>
+  );
+}
