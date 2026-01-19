@@ -6,35 +6,23 @@ import { ChevronDown, HelpCircle } from 'lucide-react';
 const faqs = [
   {
     question: "Is Career Horizons really free?",
-    answer: "Yes! Our free tier gives you access to the opportunity board, weekly newsletter, and 1 tailored resume per month. No credit card required. You can upgrade to Pro or Premium anytime for unlimited features."
+    answer: "Yes! Our free tier gives you access to the opportunity board and 1 tailored resume per month. No credit card required. Upgrade to Pro or Premium anytime for unlimited features."
   },
   {
     question: "How does the resume tailoring work?",
-    answer: "Our AI analyzes the job description and compares it to your resume. It identifies missing keywords, suggests improvements, and optimizes formatting for ATS systems. The result? Higher match scores and more interview callbacks."
+    answer: "Our AI analyzes the job description and compares it to your resume. It identifies missing keywords, suggests improvements, and optimizes formatting for ATS systems."
   },
   {
     question: "What types of opportunities are listed?",
-    answer: "We curate internships, graduate programs, career fairs, networking events, and full-time entry-level positions from top companies worldwide. We focus on opportunities relevant to university students and recent graduates."
-  },
-  {
-    question: "How quickly will I see new opportunities?",
-    answer: "Our board is updated in real-time. Pro and Premium members get instant notifications when new opportunities matching their profile are posted. Free members see opportunities in their weekly newsletter."
+    answer: "We curate internships, graduate programs, career fairs, and entry-level positions from top companies worldwide, focused on university students and recent graduates."
   },
   {
     question: "Can international students use Career Horizons?",
-    answer: "Absolutely! We specifically tag opportunities that offer visa sponsorship. You can filter by visa-friendly companies to find roles that support international applicants."
+    answer: "Absolutely! We tag opportunities that offer visa sponsorship. You can filter by visa-friendly companies to find roles that support international applicants."
   },
   {
     question: "What's the difference between Pro and Premium?",
-    answer: "Pro ($15/month) gives you unlimited resume tailoring, all opportunities, and instant notifications. Premium ($60/6 months) includes everything in Pro plus expert resume reviews, career coaching sessions, and exclusive networking events."
-  },
-  {
-    question: "Can I cancel my subscription anytime?",
-    answer: "Yes, you can cancel anytime with no questions asked. If you cancel, you'll keep access until the end of your billing period, then automatically switch to the free tier."
-  },
-  {
-    question: "How is Career Horizons different from LinkedIn Jobs?",
-    answer: "We focus exclusively on early-career opportunities for students. Our AI resume tailoring, curated opportunity board, and instant notifications are designed specifically for landing internships and graduate roles - not general job searching."
+    answer: "Pro ($15/month) gives you unlimited resume tailoring, all opportunities, and instant notifications. Premium ($60/6 months) includes everything in Pro plus expert resume reviews and career coaching."
   }
 ];
 

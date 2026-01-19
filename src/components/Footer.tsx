@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Compass, Twitter, Linkedin, Instagram } from 'lucide-react';
+import Image from 'next/image';
+import { Twitter, Linkedin, Instagram } from 'lucide-react';
 
 const footerLinks = [
   { label: 'Features', href: '#features' },
@@ -22,13 +23,14 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center">
-              <Compass className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-white">
-              Career<span className="text-indigo-400">Horizons</span>
-            </span>
+          <Link href="/" className="flex items-center">
+            <Image 
+              src="/CareerHorizons White.svg"
+              alt="Career Horizons"
+              width={140}
+              height={40}
+              className="h-8 w-auto opacity-90 hover:opacity-100 transition-opacity"
+            />
           </Link>
 
           {/* Links */}

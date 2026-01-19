@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Menu, X, Compass } from 'lucide-react';
+import Image from 'next/image';
+import { Menu, X } from 'lucide-react';
 
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,8 +19,8 @@ export default function Navigation() {
 
   const navLinks = [
     { href: '#features', label: 'Features' },
+    { href: '#how-it-works', label: 'How It Works' },
     { href: '#pricing', label: 'Pricing' },
-    { href: '#newsletter', label: 'Newsletter' },
   ];
 
   return (
@@ -34,16 +35,21 @@ export default function Navigation() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Compass className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-semibold text-white">
-              Career<span className="text-indigo-400">Horizons</span>
+            <Image 
+              src="/careerhorizons-logo.svg"
+              alt="Career Horizons"
+              width={32}
+              height={32}
+              className="h-8 w-8 group-hover:opacity-90 transition-opacity"
+              priority
+            />
+            <span className="text-white text-lg font-semibold group-hover:opacity-90 transition-opacity">
+              Career Horizons
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 transform -translate-x-1/2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}

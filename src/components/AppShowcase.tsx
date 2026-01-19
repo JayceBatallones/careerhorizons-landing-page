@@ -1,77 +1,45 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Briefcase, Bell, User, Mail, MapPin, DollarSign, Clock, TrendingUp, Award, Calendar, Linkedin, Github, Trophy, GraduationCap, Users } from 'lucide-react';
+import { Briefcase, Bell, User, MapPin, DollarSign, Clock, TrendingUp, Award, Calendar, Mail, Linkedin, Github, Sparkles, GraduationCap, Users, Trophy } from 'lucide-react';
 
 type TabType = 'opportunities' | 'profile' | 'newsletter';
 type NewsletterTabType = 'jobs' | 'events' | 'extracurriculars';
 
-export default function Hero() {
+export default function AppShowcase() {
   const [activeTab, setActiveTab] = useState<TabType>('opportunities');
   const [activeNewsletterTab, setActiveNewsletterTab] = useState<NewsletterTabType>('jobs');
+
   return (
-    <section className="relative min-h-screen overflow-hidden pt-20 pb-12">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[#0c0c0f]" />
-      
-      {/* Single gradient orb */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-indigo-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl" />
+    <section id="features" className="py-24 bg-[#0c0c0f] relative overflow-hidden">
+      {/* Background gradient */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-b from-indigo-500/5 to-transparent rounded-full blur-3xl" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        {/* Main content */}
-        <div className="text-center max-w-4xl mx-auto mb-16">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 px-4 py-2 rounded-full text-sm font-medium mb-8">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-400"></span>
-            </span>
-            <span>🇦🇺 For STEM Students in Australia & New Zealand 🇳🇿</span>
+        {/* Section header */}
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 bg-[#1a1a21] border border-[#2a2a35] text-[#8a8a9a] px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <Sparkles className="w-4 h-4 text-indigo-400" />
+            <span>See It In Action</span>
           </div>
-
-          {/* Main heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-            Never Miss a{' '}
-            <span className="relative">
-              <span className="gradient-text">Career Opportunity</span>
-              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 300 12" fill="none">
-                <path d="M2 10C50 4 150 2 298 10" stroke="url(#gradient)" strokeWidth="3" strokeLinecap="round"/>
-                <defs>
-                  <linearGradient id="gradient" x1="0" y1="0" x2="300" y2="0">
-                    <stop stopColor="#6366f1"/>
-                    <stop offset="0.5" stopColor="#a855f7"/>
-                    <stop offset="1" stopColor="#22d3ee"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-          </h1>
-
-          {/* Subheading */}
-          <p className="text-lg sm:text-xl text-[#8a8a9a] max-w-2xl mx-auto mb-10 leading-relaxed">
-            Your all-in-one platform for STEM internships, graduate programs, and industry events across Australia and New Zealand. 
-            Get instant alerts and AI-powered resume tailoring.
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
+            Everything you need in{' '}
+            <span className="gradient-text">one place</span>
+          </h2>
+          <p className="text-[#8a8a9a] text-lg">
+            Your complete career toolkit from discovery to application.
           </p>
-
-          {/* CTA Button */}
-          <div className="flex flex-col items-center justify-center mb-8">
-            <button className="w-full sm:w-auto group relative overflow-hidden bg-white text-[#0c0c0f] px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:shadow-lg hover:shadow-white/10 flex items-center justify-center gap-2">
-              <span className="relative z-10">Start Free Today</span>
-              <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-            </button>
-          </div>
         </div>
 
-        {/* App Preview */}
-        <div className="relative max-w-6xl mx-auto">
-          {/* Glow effect behind the preview */}
-          <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-3xl -z-10 translate-y-20" />
-
-          {/* Browser mockup with tabs */}
+        {/* Interactive App Demo */}
+        <div className="max-w-6xl mx-auto">
+          {/* Browser mockup */}
           <div className="relative rounded-2xl overflow-hidden border border-[#2a2a35] bg-[#0f0f14] shadow-2xl shadow-black/50">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-3xl -z-10 translate-y-20" />
+            
             {/* Browser header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-[#1a1a21] bg-[#0a0a0d]">
               <div className="flex gap-1.5">
@@ -86,9 +54,9 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Main Tabs */}
-            <div className="bg-[#0f0f14] border-b border-[#1a1a21]">
-              <div className="flex justify-center">
+            {/* Tab Navigation - Centered */}
+            <div className="bg-[#0a0a0d] border-b border-[#1a1a21] flex justify-center">
+              <div className="flex gap-2">
                 <button
                   onClick={() => setActiveTab('opportunities')}
                   className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
@@ -332,7 +300,7 @@ export default function Hero() {
                 </div>
               )}
 
-              {/* Newsletter Tab */}
+              {/* Notifications Tab */}
               {activeTab === 'newsletter' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between mb-6">
@@ -357,7 +325,7 @@ export default function Hero() {
                     >
                       <Briefcase className="w-4 h-4" />
                       <span>Job Opportunities</span>
-                      <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-semibold">6</span>
+                      <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-semibold">8</span>
                     </button>
                     <button
                       onClick={() => setActiveNewsletterTab('events')}
@@ -530,11 +498,16 @@ export default function Hero() {
                           type: 'Conference'
                         },
                       ].map((event, i) => (
-                        <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-purple-500/30 transition-all cursor-pointer group">
+                        <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-purple-500/30 transition-all cursor-pointer">
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h5 className="font-semibold text-white text-sm group-hover:text-purple-300 transition-colors mb-1">{event.title}</h5>
-                              <div className="flex flex-wrap items-center gap-3 text-[#6a6a7a] text-xs">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h5 className="font-semibold text-white text-sm">{event.title}</h5>
+                                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">
+                                  {event.type}
+                                </span>
+                              </div>
+                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[#6a6a7a] text-xs">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-3 h-3" />
                                   {event.date} • {event.time}
@@ -543,15 +516,14 @@ export default function Hero() {
                                   <MapPin className="w-3 h-3" />
                                   {event.location}
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <Users className="w-3 h-3" />
-                                  {event.attendees} attending
-                                </span>
                               </div>
                             </div>
-                            <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 text-xs font-medium ml-2 flex-shrink-0">
-                              {event.type}
-                            </span>
+                            <div className="text-right ml-3 flex-shrink-0">
+                              <div className="flex items-center gap-1 text-[#6a6a7a] text-xs">
+                                <Users className="w-3 h-3" />
+                                <span>{event.attendees}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -560,56 +532,70 @@ export default function Hero() {
 
                   {/* Extracurriculars Section */}
                   {activeNewsletterTab === 'extracurriculars' && (
-                    <div className="space-y-3">
-                      {[
-                        {
-                          title: 'USYD Computer Science Society',
-                          role: 'Join as Member',
-                          description: 'Network with CS students, attend workshops, and participate in hackathons',
-                          category: 'Society',
-                          members: 1240
-                        },
-                        {
-                          title: 'Women in STEM Program',
-                          role: 'Mentorship Available',
-                          description: 'Connect with industry mentors and fellow STEM students',
-                          category: 'Program',
-                          members: 450
-                        },
-                        {
-                          title: 'SENG3011 Software Engineering Project',
-                          role: 'Team Formation',
-                          description: 'Looking for team members for capstone project - AI/ML focus',
-                          category: 'Project',
-                          members: 8
-                        },
-                        {
-                          title: 'Sydney Coding Bootcamp',
-                          role: 'Volunteer Tutor',
-                          description: 'Teach programming fundamentals to high school students',
-                          category: 'Volunteer',
-                          members: 34
-                        },
-                      ].map((activity, i) => (
-                        <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-cyan-500/30 transition-all cursor-pointer group">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h5 className="font-semibold text-white text-sm group-hover:text-cyan-300 transition-colors">{activity.title}</h5>
-                                <span className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 text-xs font-medium">
-                                  {activity.category}
-                                </span>
-                              </div>
-                              <p className="text-indigo-400 text-xs font-medium mb-2">{activity.role}</p>
-                              <p className="text-[#8a8a9a] text-sm mb-2">{activity.description}</p>
-                              <div className="flex items-center gap-1 text-[#6a6a7a] text-xs">
-                                <Users className="w-3 h-3" />
-                                <span>{activity.members} members</span>
-                              </div>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          {
+                            title: 'USYD Computer Science Society',
+                            type: 'Society',
+                            members: '2.4k members',
+                            description: 'The premier tech society at USYD',
+                            tag: 'Popular'
+                          },
+                          {
+                            title: 'Google Developer Student Club',
+                            type: 'Club',
+                            members: '890 members',
+                            description: 'Learn and build with Google tech',
+                            tag: 'Active'
+                          },
+                          {
+                            title: 'HackSydney 2026',
+                            type: 'Hackathon',
+                            members: 'Feb 15-17',
+                            description: 'Sydney\'s biggest student hackathon',
+                            tag: 'Registration Open'
+                          },
+                          {
+                            title: 'Women in Tech USYD',
+                            type: 'Society',
+                            members: '1.2k members',
+                            description: 'Supporting women in technology',
+                            tag: 'Welcoming'
+                          },
+                          {
+                            title: 'USYD Robotics Club',
+                            type: 'Club',
+                            members: '650 members',
+                            description: 'Build robots and compete',
+                            tag: 'Hands-on'
+                          },
+                          {
+                            title: 'AWS Cloud Club',
+                            type: 'Club',
+                            members: '430 members',
+                            description: 'Master cloud computing skills',
+                            tag: 'Technical'
+                          },
+                        ].map((extra, i) => (
+                          <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-cyan-500/30 transition-all cursor-pointer group">
+                            <div className="flex items-start justify-between mb-2">
+                              <h5 className="font-semibold text-white text-sm group-hover:text-cyan-300 transition-colors">{extra.title}</h5>
+                              <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 flex-shrink-0 ml-2">
+                                {extra.tag}
+                              </span>
+                            </div>
+                            <p className="text-[#6a6a7a] text-xs mb-3">{extra.description}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-[#8a8a9a] text-xs">{extra.type}</span>
+                              <span className="text-[#6a6a7a] text-xs flex items-center gap-1">
+                                <GraduationCap className="w-3 h-3" />
+                                {extra.members}
+                              </span>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -617,9 +603,10 @@ export default function Hero() {
             </div>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        </div>
       </div>
-
-
     </section>
   );
 }

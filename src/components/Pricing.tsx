@@ -12,12 +12,10 @@ const plans = [
     period: 'forever',
     features: [
       { text: '1 tailored resume per month', included: true },
-      { text: 'Latest opportunities only', included: true },
-      { text: 'Weekly newsletter', included: true },
+      { text: 'Latest opportunities', included: true },
       { text: 'Basic filtering', included: true },
-      { text: 'All open opportunities', included: false },
+      { text: 'All opportunities', included: false },
       { text: 'Instant notifications', included: false },
-      { text: 'Unlimited resume tailoring', included: false },
     ],
     cta: 'Get Started Free',
     popular: false,
@@ -30,12 +28,10 @@ const plans = [
     period: '/month',
     features: [
       { text: 'Unlimited resume tailoring', included: true },
-      { text: 'All open opportunities', included: true },
-      { text: 'Instant email notifications', included: true },
+      { text: 'All opportunities', included: true },
+      { text: 'Instant notifications', included: true },
       { text: 'Advanced filtering', included: true },
-      { text: 'Application tracking', included: true },
       { text: 'Priority support', included: true },
-      { text: 'Early access to new features', included: true },
     ],
     cta: 'Start Pro',
     popular: true,
@@ -49,12 +45,10 @@ const plans = [
     originalPrice: 90,
     features: [
       { text: 'Everything in Pro', included: true },
-      { text: '6 months of full access', included: true },
-      { text: 'Save $30 vs monthly', included: true },
-      { text: 'Resume review by experts', included: true },
-      { text: 'Career coaching session', included: true },
-      { text: 'Exclusive networking events', included: true },
-      { text: 'Priority support', included: true },
+      { text: '6 months full access', included: true },
+      { text: 'Expert resume reviews', included: true },
+      { text: 'Career coaching', included: true },
+      { text: 'Save $30 (33% off)', included: true },
     ],
     cta: 'Go Premium',
     popular: false,
@@ -186,7 +180,7 @@ export default function Pricing() {
                 </div>
 
                 {/* Features */}
-                <ul className="space-y-4 mb-8">
+                <ul className="space-y-3 mb-8">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       {feature.included ? (
@@ -219,29 +213,7 @@ export default function Pricing() {
           ))}
         </div>
 
-        {/* Trust elements */}
-        <div className="mt-12 text-center">
-          <div className="flex flex-wrap items-center justify-center gap-6 text-[#6a6a7a] text-sm">
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              30-day money back guarantee
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Cancel anytime
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Secure payment
-            </span>
-          </div>
-        </div>
+
       </div>
     </section>
   );

@@ -1,39 +1,28 @@
 'use client';
 
-import { UserPlus, Search, FileEdit, Send, ArrowRight } from 'lucide-react';
+import { UserPlus, Search, Send, ArrowRight } from 'lucide-react';
 
 const steps = [
   {
     icon: UserPlus,
     number: '01',
-    title: 'Create Your Profile',
-    description: 'Sign up in 30 seconds. Tell us your skills, interests, and career goals.',
-    color: 'indigo',
-    features: ['Quick setup', 'Skills tagging', 'Goal setting']
+    title: 'Sign Up',
+    description: 'Create your profile in 30 seconds.',
+    color: 'indigo'
   },
   {
     icon: Search,
     number: '02',
-    title: 'Discover Opportunities',
-    description: 'Browse curated internships, graduate programs, and events matched to you.',
-    color: 'purple',
-    features: ['Smart matching', 'Advanced filters', 'Real-time updates']
-  },
-  {
-    icon: FileEdit,
-    number: '03',
-    title: 'Tailor Your Resume',
-    description: 'Our AI optimizes your resume for each role. Beat the ATS every time.',
-    color: 'cyan',
-    features: ['AI-powered', 'ATS optimized', 'Instant results']
+    title: 'Discover',
+    description: 'Find opportunities matched to your skills.',
+    color: 'purple'
   },
   {
     icon: Send,
-    number: '04',
-    title: 'Apply & Track',
-    description: 'Submit applications with confidence and track your progress in one place.',
-    color: 'emerald',
-    features: ['One-click apply', 'Status tracking', 'Deadline alerts']
+    number: '03',
+    title: 'Apply',
+    description: 'Tailor your resume and submit with confidence.',
+    color: 'cyan'
   }
 ];
 
@@ -41,26 +30,17 @@ const colorClasses = {
   indigo: {
     bg: 'bg-indigo-500/10',
     border: 'border-indigo-500/20',
-    text: 'text-indigo-400',
-    glow: 'from-indigo-500/20'
+    text: 'text-indigo-400'
   },
   purple: {
     bg: 'bg-purple-500/10',
     border: 'border-purple-500/20',
-    text: 'text-purple-400',
-    glow: 'from-purple-500/20'
+    text: 'text-purple-400'
   },
   cyan: {
     bg: 'bg-cyan-500/10',
     border: 'border-cyan-500/20',
-    text: 'text-cyan-400',
-    glow: 'from-cyan-500/20'
-  },
-  emerald: {
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20',
-    text: 'text-emerald-400',
-    glow: 'from-emerald-500/20'
+    text: 'text-cyan-400'
   }
 };
 
@@ -79,81 +59,52 @@ export default function HowItWorks() {
             <span>Simple Process</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-            Land Your Dream Job in{' '}
-            <span className="gradient-text">4 Simple Steps</span>
+            Get started in{' '}
+            <span className="gradient-text">3 simple steps</span>
           </h2>
           <p className="text-[#8a8a9a] text-lg">
-            From sign-up to offer letter. Our streamlined process gets you there faster.
+            From sign-up to application in minutes.
           </p>
         </div>
 
         {/* Steps grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {steps.map((step, index) => {
             const colors = colorClasses[step.color as keyof typeof colorClasses];
             return (
               <div key={index} className="relative group">
-                {/* Connection line */}
+                {/* Connection arrow */}
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-12 left-[calc(100%+12px)] w-[calc(100%-24px)] h-px">
-                    <div className="h-full bg-gradient-to-r from-[#2a2a35] via-[#3a3a4a] to-[#2a2a35]" />
-                    <ArrowRight className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-[#3a3a4a]" />
+                  <div className="hidden md:block absolute top-16 left-[calc(100%+1rem)] w-8">
+                    <ArrowRight className="w-6 h-6 text-[#3a3a4a]" />
                   </div>
                 )}
 
                 {/* Card */}
-                <div className={`relative bg-[#0f0f14] rounded-2xl p-8 border border-[#1a1a21] hover:border-[#2a2a35] transition-all h-full group-hover:translate-y-[-4px] group-hover:shadow-xl group-hover:shadow-black/20`}>
-                  {/* Gradient glow on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${colors.glow} to-transparent opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity duration-500`} />
-                  
+                <div className="relative bg-[#0f0f14] rounded-2xl p-8 border border-[#1a1a21] hover:border-[#2a2a35] transition-all text-center">
                   <div className="relative">
+                    {/* Icon */}
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl ${colors.bg} border ${colors.border} mb-6`}>
+                      <step.icon className={`w-8 h-8 ${colors.text}`} />
+                    </div>
+
                     {/* Step number */}
-                    <div className="flex items-center justify-between mb-6">
-                      <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl ${colors.bg} border ${colors.border}`}>
-                        <step.icon className={`w-7 h-7 ${colors.text}`} />
-                      </div>
-                      <span className={`text-4xl font-bold ${colors.text} opacity-20`}>{step.number}</span>
+                    <div className={`absolute top-0 right-8 text-5xl font-bold ${colors.text} opacity-10`}>
+                      {step.number}
                     </div>
 
                     {/* Content */}
                     <h3 className="text-xl font-bold text-white mb-3">
                       {step.title}
                     </h3>
-                    <p className="text-[#8a8a9a] mb-6 leading-relaxed">
+                    <p className="text-[#8a8a9a] leading-relaxed">
                       {step.description}
                     </p>
-
-                    {/* Features */}
-                    <div className="flex flex-wrap gap-2">
-                      {step.features.map((feature, i) => (
-                        <span key={i} className="inline-block px-3 py-1 rounded-full bg-[#1a1a21] text-[#6a6a7a] text-xs font-medium">
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
                   </div>
                 </div>
               </div>
             );
           })}
-        </div>
-
-        {/* Bottom CTA */}
-        <div className="text-center">
-          <div className="inline-flex flex-col sm:flex-row items-center gap-4 p-8 rounded-2xl bg-gradient-to-r from-[#1a1a21] via-[#0f0f14] to-[#1a1a21] border border-[#2a2a35]">
-            <div className="text-center sm:text-left">
-              <h3 className="text-xl font-bold text-white mb-1">
-                Ready to start your journey?
-              </h3>
-              <p className="text-[#6a6a7a] text-sm">
-                Join 10,000+ students already using Career Horizons
-              </p>
-            </div>
-            <button className="bg-white text-[#0c0c0f] px-6 py-3 rounded-xl font-semibold hover:bg-[#f0f0f5] transition-colors flex items-center gap-2 whitespace-nowrap">
-              Get Started Free
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
     </section>
