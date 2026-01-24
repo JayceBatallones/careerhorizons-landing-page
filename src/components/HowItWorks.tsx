@@ -1,20 +1,20 @@
 'use client';
 
-import { UserPlus, Search, Send, ArrowRight } from 'lucide-react';
+import { Layers, Search, Send, Bell, ArrowRight } from 'lucide-react';
 
 const steps = [
   {
-    icon: UserPlus,
+    icon: Layers,
     number: '01',
-    title: 'Sign Up',
-    description: 'Create your profile in 30 seconds.',
+    title: 'Key Features',
+    description: 'Explore the platform highlights built for STEM students.',
     color: 'indigo'
   },
   {
     icon: Search,
     number: '02',
     title: 'Discover',
-    description: 'Find opportunities matched to your skills.',
+    description: 'Find opportunities that match your skills and interests.',
     color: 'purple'
   },
   {
@@ -23,6 +23,14 @@ const steps = [
     title: 'Apply',
     description: 'Tailor your resume and submit with confidence.',
     color: 'cyan'
+  },
+  {
+    icon: Bell,
+    number: '04',
+    title: 'Stay Up to Date',
+    description: 'Get instant notifications for new roles and events.',
+    color: 'indigo',
+    showNotification: true
   }
 ];
 
@@ -60,32 +68,45 @@ export default function HowItWorks() {
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
             Get started in{' '}
-            <span className="gradient-text">3 simple steps</span>
+            <span className="gradient-text">4 simple steps</span>
           </h2>
           <p className="text-[#8a8a9a] text-lg">
-            From sign-up to application in minutes.
+            A quick walkthrough that highlights the core experience.
           </p>
         </div>
 
         {/* Steps grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto items-stretch">
           {steps.map((step, index) => {
             const colors = colorClasses[step.color as keyof typeof colorClasses];
+            const showRowArrow = index % 2 === 0 && index + 1 < steps.length;
+            const showColumnArrow = index < steps.length - 1;
             return (
               <div key={index} className="relative group">
                 {/* Connection arrow */}
-                {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-16 left-[calc(100%+1rem)] w-8">
+                {showColumnArrow && (
+                  <div className="hidden lg:block absolute top-1/2 -translate-y-1/2 left-[calc(100%+0.75rem)] w-8">
+                    <ArrowRight className="w-6 h-6 text-[#3a3a4a]" />
+                  </div>
+                )}
+                {showRowArrow && (
+                  <div className="hidden md:block lg:hidden absolute top-1/2 -translate-y-1/2 left-[calc(100%+0.75rem)] w-8">
                     <ArrowRight className="w-6 h-6 text-[#3a3a4a]" />
                   </div>
                 )}
 
                 {/* Card */}
-                <div className="relative bg-[#0f0f14] rounded-2xl p-8 border border-[#1a1a21] hover:border-[#2a2a35] transition-all text-center">
-                  <div className="relative">
+                <div className="relative bg-[#0f0f14] rounded-2xl p-8 border border-[#1a1a21] hover:border-[#2a2a35] transition-all text-center h-full flex flex-col min-h-[320px]">
+                  <div className="relative flex-1">
                     {/* Icon */}
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-xl ${colors.bg} border ${colors.border} mb-6`}>
+                    <div className={`relative inline-flex items-center justify-center w-16 h-16 rounded-xl ${colors.bg} border ${colors.border} mb-6`}>
                       <step.icon className={`w-8 h-8 ${colors.text}`} />
+                      {step.showNotification && (
+                        <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75 animate-ping" />
+                          <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-400" />
+                        </span>
+                      )}
                     </div>
 
                     {/* Step number */}

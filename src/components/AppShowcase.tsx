@@ -1,459 +1,748 @@
 'use client';
 
-import { useState } from 'react';
-import { Briefcase, Bell, User, MapPin, DollarSign, Clock, TrendingUp, Award, Calendar, Mail, Linkedin, Github, Sparkles, GraduationCap, Users, Trophy } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  Award,
+  Bell,
+  Briefcase,
+  Calendar,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  Github,
+  GraduationCap,
+  Linkedin,
+  Mail,
+  MapPin,
+  Shield,
+  Sparkles,
+  TrendingUp,
+  Trophy,
+  User,
+  Users,
+} from 'lucide-react';
 
 type TabType = 'opportunities' | 'profile' | 'newsletter';
 type NewsletterTabType = 'jobs' | 'events' | 'extracurriculars';
+type RoleType = 'internship' | 'graduate';
+type RoleStatus = 'active' | 'upcoming' | 'predicted';
+
+type Role = {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  type: RoleType;
+  status: RoleStatus;
+  match: number;
+  posted: string;
+  logo: string;
+  workRights: string[];
+  timeline: string;
+  highlights: string[];
+};
+
+const statusStyles: Record<RoleStatus, { label: string; dot: string; badge: string; text: string }> = {
+  active: {
+    label: 'Hiring now',
+    dot: 'bg-emerald-400',
+    badge: 'bg-emerald-500/15 text-emerald-300',
+    text: 'text-emerald-300',
+  },
+  upcoming: {
+    label: 'Opening soon',
+    dot: 'bg-amber-400',
+    badge: 'bg-amber-500/15 text-amber-200',
+    text: 'text-amber-200',
+  },
+  predicted: {
+    label: 'Predicted',
+    dot: 'bg-sky-400',
+    badge: 'bg-sky-500/15 text-sky-200',
+    text: 'text-sky-200',
+  },
+};
+
+const roles: Role[] = [
+  {
+    id: 'atlassian-intern',
+    title: 'Software Engineering Intern',
+    company: 'Atlassian',
+    location: 'Sydney, NSW',
+    salary: '$35–42/hr',
+    type: 'internship',
+    status: 'active',
+    match: 96,
+    posted: '2h ago',
+    logo: '🔷',
+    workRights: ['Citizen/PR', 'Student Visa'],
+    timeline: 'Closes in 9 days',
+    highlights: [
+      'Paired with a mentor and ship production code by week two.',
+      'Rotations across Platform and Ecosystem teams.',
+      'Hybrid, two days in Sydney office.',
+    ],
+  },
+  {
+    id: 'canva-grad',
+    title: 'Graduate Software Engineer',
+    company: 'Canva',
+    location: 'Sydney, NSW',
+    salary: '$90–105k + equity',
+    type: 'graduate',
+    status: 'upcoming',
+    match: 91,
+    posted: 'Opens Feb 12',
+    logo: '🎨',
+    workRights: ['Citizen/PR'],
+    timeline: 'Expected to open mid-Feb',
+    highlights: [
+      'AI/ML heavy squads with shipped models in production.',
+      'Dedicated grad bootcamp and product rotations.',
+      'Sydney HQ with relocation support.',
+    ],
+  },
+  {
+    id: 'xero-intern',
+    title: 'Data Engineering Intern',
+    company: 'Xero',
+    location: 'Melbourne, VIC',
+    salary: '$33–38/hr',
+    type: 'internship',
+    status: 'predicted',
+    match: 88,
+    posted: 'Predicted July',
+    logo: '💚',
+    workRights: ['Citizen/PR', 'Student Visa'],
+    timeline: 'Cycle forecasted for July',
+    highlights: [
+      'Warehouse migration to Snowflake and dbt.',
+      'Work with finance and product analytics squads.',
+      'Supports remote-first with optional office days.',
+    ],
+  },
+  {
+    id: 'rea-grad',
+    title: 'Graduate Software Engineer',
+    company: 'REA Group',
+    location: 'Melbourne, VIC',
+    salary: '$85–95k',
+    type: 'graduate',
+    status: 'active',
+    match: 84,
+    posted: '1d ago',
+    logo: '🏠',
+    workRights: ['Citizen/PR'],
+    timeline: 'Interviews start in 2 weeks',
+    highlights: [
+      'Customer-facing squads building the property marketplace.',
+      'Pair programming culture with weekly ship reviews.',
+      'Full-time hybrid, two Melbourne office anchor days.',
+    ],
+  },
+];
+
+const profilePreview = {
+  name: 'John Smith',
+  initials: 'JS',
+  degree: 'B.CompSci, University of Sydney',
+  focus: 'Software Engineering • Penultimate',
+  location: 'Sydney, NSW',
+  workRights: 'Student Visa',
+  rolePreferences: ['Software Engineering', 'Data Science', 'Product Engineering'],
+  skills: ['React', 'TypeScript', 'Python', 'AWS', 'Machine Learning'],
+  completion: 86,
+  employability: 90,
+  applications: 18,
+  events: 7,
+  links: {
+    email: 'john.smith@sydney.edu.au',
+    linkedin: 'linkedin.com/in/johnsmith',
+    github: 'github.com/johnsmith',
+  },
+  checklist: ['Upload your updated transcript', 'Add a second project with metrics', 'Save 3 more roles for alerts'],
+};
 
 export default function AppShowcase() {
   const [activeTab, setActiveTab] = useState<TabType>('opportunities');
   const [activeNewsletterTab, setActiveNewsletterTab] = useState<NewsletterTabType>('jobs');
+  const [typeFilter, setTypeFilter] = useState<RoleType | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<RoleStatus | 'all'>('active');
+  const filteredRoles = useMemo(
+    () =>
+      roles.filter((role) => {
+        const typeOk = typeFilter === 'all' || role.type === typeFilter;
+        const statusOk = statusFilter === 'all' || role.status === statusFilter;
+        return typeOk && statusOk;
+      }),
+    [typeFilter, statusFilter]
+  );
+
+  const [selectedRoleId, setSelectedRoleId] = useState<string>(filteredRoles[0]?.id ?? roles[0].id);
+
+  const effectiveSelectedRoleId = useMemo(() => {
+    if (filteredRoles.some((role) => role.id === selectedRoleId)) {
+      return selectedRoleId;
+    }
+    return filteredRoles[0]?.id ?? roles[0].id;
+  }, [filteredRoles, selectedRoleId]);
+
+  const selectedRole =
+    filteredRoles.find((role) => role.id === effectiveSelectedRoleId) ?? filteredRoles[0] ?? roles[0];
 
   return (
-    <section id="features" className="py-24 bg-[#0c0c0f] relative overflow-hidden">
-      {/* Background gradient */}
+    <section id="features" className="relative overflow-hidden bg-[#0c0c0f] py-24">
       <div className="absolute inset-0">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] bg-gradient-to-b from-indigo-500/5 to-transparent rounded-full blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[600px] w-[1200px] -translate-x-1/2 rounded-full bg-gradient-to-b from-indigo-500/5 to-transparent blur-3xl" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 bg-[#1a1a21] border border-[#2a2a35] text-[#8a8a9a] px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
-            <span>See It In Action</span>
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-12 max-w-3xl text-center">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#2a2a35] bg-[#1a1a21] px-4 py-2 text-sm font-medium text-[#8a8a9a]">
+            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <span>See the live app layout</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
-            Everything you need in{' '}
-            <span className="gradient-text">one place</span>
+          <h2 className="mb-6 text-3xl font-bold text-white sm:text-4xl md:text-5xl">
+            The Career Horizons workspace you get after signup
           </h2>
-          <p className="text-[#8a8a9a] text-lg">
-            Your complete career toolkit from discovery to application.
+          <p className="text-lg text-[#8a8a9a]">
+            We pulled the Opportunity Board and Profile screens directly from the production app so you can see exactly how it works.
           </p>
         </div>
 
-        {/* Interactive App Demo */}
-        <div className="max-w-6xl mx-auto">
-          {/* Browser mockup */}
-          <div className="relative rounded-2xl overflow-hidden border border-[#2a2a35] bg-[#0f0f14] shadow-2xl shadow-black/50">
-            {/* Glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-3xl -z-10 translate-y-20" />
-            
-            {/* Browser header */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-[#1a1a21] bg-[#0a0a0d]">
+        <div className="mx-auto max-w-6xl">
+          <div className="relative overflow-hidden rounded-2xl border border-[#2a2a35] bg-[#0f0f14] shadow-2xl shadow-black/50">
+            <div className="absolute inset-0 -z-10 translate-y-20 bg-gradient-to-t from-indigo-500/20 via-purple-500/10 to-transparent blur-3xl" />
+
+            <div className="flex items-center gap-3 border-b border-[#1a1a21] bg-[#0a0a0d] px-4 py-3">
               <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-                <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-                <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+                <div className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+                <div className="h-3 w-3 rounded-full bg-[#febc2e]" />
+                <div className="h-3 w-3 rounded-full bg-[#28c840]" />
               </div>
-              <div className="flex-1 mx-4">
-                <div className="bg-[#1a1a21] rounded-lg h-7 max-w-sm mx-auto flex items-center justify-center px-4">
-                  <span className="text-[#6a6a7a] text-xs">app.careerhorizons.com</span>
+              <div className="mx-4 flex-1">
+                <div className="mx-auto flex h-7 max-w-sm items-center justify-center rounded-lg bg-[#1a1a21] px-4">
+                  <span className="text-xs text-[#6a6a7a]">app.careerhorizons.com</span>
                 </div>
               </div>
             </div>
 
-            {/* Tab Navigation - Centered */}
-            <div className="bg-[#0a0a0d] border-b border-[#1a1a21] flex justify-center">
+            <div className="flex justify-center border-b border-[#1a1a21] bg-[#0a0a0d]">
               <div className="flex gap-2">
-                <button
-                  onClick={() => setActiveTab('opportunities')}
-                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                    activeTab === 'opportunities'
-                      ? 'text-indigo-400 border-indigo-400'
-                      : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
-                  }`}
-                >
-                  <Briefcase className="w-4 h-4" />
-                  <span>Opportunity Board</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                    activeTab === 'profile'
-                      ? 'text-indigo-400 border-indigo-400'
-                      : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
-                  }`}
-                >
-                  <User className="w-4 h-4" />
-                  <span>Profile</span>
-                </button>
-                <button
-                  onClick={() => setActiveTab('newsletter')}
-                  className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
-                    activeTab === 'newsletter'
-                      ? 'text-indigo-400 border-indigo-400'
-                      : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
-                  }`}
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Newsletter</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Tab Content */}
-            <div className="p-8 min-h-[500px] bg-gradient-to-b from-[#0f0f14] to-[#0c0c0f]">
-              {/* Opportunity Board */}
-              {activeTab === 'opportunities' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-1">Opportunities</h3>
-                      <p className="text-[#6a6a7a]">42 new opportunities this week</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button className="px-4 py-2 bg-[#1a1a21] hover:bg-[#2a2a35] text-[#8a8a9a] rounded-lg text-sm font-medium transition-colors">
-                        Filters
-                      </button>
-                      <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-medium transition-colors">
-                        View All
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {[
-                      { 
-                        title: 'Software Engineering Intern',
-                        company: 'Atlassian',
-                        location: 'Sydney, NSW',
-                        salary: '$35-42/hr',
-                        type: 'Internship',
-                        posted: '2h ago',
-                        match: 95,
-                        logo: '🔷'
-                      },
-                      { 
-                        title: 'Data Science Intern',
-                        company: 'Canva',
-                        location: 'Melbourne, VIC',
-                        salary: '$38-45/hr',
-                        type: 'Internship',
-                        posted: '5h ago',
-                        match: 92,
-                        logo: '🎨'
-                      },
-                      { 
-                        title: 'Graduate Developer Program',
-                        company: 'Xero',
-                        location: 'Wellington, NZ',
-                        salary: '$75-85k',
-                        type: 'Graduate',
-                        posted: '1d ago',
-                        match: 88,
-                        logo: '💚'
-                      },
-                      { 
-                        title: 'Software Engineering Grad',
-                        company: 'REA Group',
-                        location: 'Melbourne, VIC',
-                        salary: '$80-95k',
-                        type: 'Graduate',
-                        posted: '2d ago',
-                        match: 85,
-                        logo: '🏠'
-                      },
-                    ].map((opp, i) => (
-                      <div key={i} className="group bg-[#1a1a21] hover:bg-[#1e1e26] rounded-xl p-5 border border-[#2a2a35] hover:border-[#3a3a4a] transition-all cursor-pointer">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex items-start gap-3">
-                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-2xl flex-shrink-0">
-                              {opp.logo}
-                            </div>
-                            <div>
-                              <h4 className="font-semibold text-white mb-1 group-hover:text-indigo-300 transition-colors">
-                                {opp.title}
-                              </h4>
-                              <p className="text-[#8a8a9a] text-sm">{opp.company}</p>
-                            </div>
-                          </div>
-                          <span className={`inline-block px-2.5 py-1 rounded-md text-xs font-medium ${
-                            opp.type === 'Internship' 
-                              ? 'bg-indigo-500/10 text-indigo-400' 
-                              : 'bg-purple-500/10 text-purple-400'
-                          }`}>
-                            {opp.type}
-                          </span>
-                        </div>
-                        
-                        <div className="flex items-center gap-4 text-[#6a6a7a] text-sm mb-3">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5" />
-                            {opp.location}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <DollarSign className="w-3.5 h-3.5" />
-                            {opp.salary}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#6a6a7a] text-xs flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {opp.posted}
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-16 h-1.5 rounded-full bg-[#2a2a35] overflow-hidden">
-                              <div 
-                                className={`h-full rounded-full ${
-                                  opp.match >= 90 ? 'bg-green-500' : 'bg-yellow-500'
-                                }`}
-                                style={{width: `${opp.match}%`}}
-                              />
-                            </div>
-                            <span className="text-[10px] text-[#6a6a7a]">{opp.match}%</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Profile Tab */}
-              {activeTab === 'profile' && (
-                <div className="space-y-6">
-                  <div className="flex items-start gap-6 mb-8">
-                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold flex-shrink-0">
-                      JS
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-2">John Smith</h3>
-                      <p className="text-[#8a8a9a] mb-3">Computer Science Student • University of Sydney</p>
-                      <div className="flex flex-wrap gap-2">
-                        <span className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-sm font-medium">
-                          Python
-                        </span>
-                        <span className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-sm font-medium">
-                          React
-                        </span>
-                        <span className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-sm font-medium">
-                          Machine Learning
-                        </span>
-                        <span className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-sm font-medium">
-                          AWS
-                        </span>
-                      </div>
-                    </div>
-                    <button className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Edit Profile
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-[#1a1a21] rounded-xl p-5 border border-[#2a2a35]">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
-                          <TrendingUp className="w-5 h-5 text-indigo-400" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-white">95%</p>
-                          <p className="text-[#6a6a7a] text-sm">Profile Score</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-[#1a1a21] rounded-xl p-5 border border-[#2a2a35]">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                          <Award className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-white">24</p>
-                          <p className="text-[#6a6a7a] text-sm">Applications</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-[#1a1a21] rounded-xl p-5 border border-[#2a2a35]">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center">
-                          <Calendar className="w-5 h-5 text-cyan-400" />
-                        </div>
-                        <div>
-                          <p className="text-2xl font-bold text-white">12</p>
-                          <p className="text-[#6a6a7a] text-sm">Events Saved</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#1a1a21] rounded-xl p-6 border border-[#2a2a35]">
-                    <h4 className="text-white font-semibold mb-4">Contact Information</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3 text-[#8a8a9a]">
-                        <Mail className="w-4 h-4" />
-                        <span>john.smith@sydney.edu.au</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-[#8a8a9a]">
-                        <Linkedin className="w-4 h-4" />
-                        <span>linkedin.com/in/johnsmith</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-[#8a8a9a]">
-                        <Github className="w-4 h-4" />
-                        <span>github.com/johnsmith</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Notifications Tab */}
-              {activeTab === 'newsletter' && (
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between mb-6">
-                    <div>
-                      <h3 className="text-2xl font-bold text-white mb-1">Weekly Newsletter</h3>
-                      <p className="text-[#6a6a7a]">Tailored for Year 3 • Computer Science • University of Sydney</p>
-                    </div>
-                    <div className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-sm font-medium">
-                      This Week
-                    </div>
-                  </div>
-
-                  {/* Newsletter Sub-tabs */}
-                  <div className="flex gap-2 border-b border-[#2a2a35] mb-6">
+                {([
+                  { key: 'opportunities', label: 'Opportunity Board', icon: Briefcase },
+                  { key: 'profile', label: 'Profile', icon: User },
+                  { key: 'newsletter', label: 'Newsletter', icon: Mail },
+                ] as const).map((tab) => {
+                  const Icon = tab.icon;
+                  return (
                     <button
-                      onClick={() => setActiveNewsletterTab('jobs')}
-                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
-                        activeNewsletterTab === 'jobs'
-                          ? 'text-indigo-400 border-indigo-400'
-                          : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
+                      key={tab.key}
+                      onClick={() => setActiveTab(tab.key)}
+                      className={`flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors border-b-2 ${
+                        activeTab === tab.key
+                          ? 'border-indigo-400 text-indigo-400'
+                          : 'border-transparent text-[#6a6a7a] hover:text-[#8a8a9a]'
                       }`}
                     >
-                      <Briefcase className="w-4 h-4" />
+                      <Icon className="h-4 w-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="min-h-[540px] bg-gradient-to-b from-[#0f0f14] to-[#0c0c0f] p-8">
+              {activeTab === 'opportunities' && (
+                <div className="space-y-6">
+                  <div className="flex flex-col gap-3 rounded-2xl border border-[#2a2a35] bg-gradient-to-r from-indigo-500/5 via-[#101018] to-purple-500/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-indigo-300">Matched to your profile</p>
+                      <h3 className="text-2xl font-semibold text-white">Opportunity Board</h3>
+                      <p className="text-sm text-[#8a8a9a]">Real layout from the Career Horizons app.</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs font-medium">
+                      <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-indigo-200">Penultimate • Software Engineering</span>
+                      <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-emerald-200">42 new matches this week</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: 'All types', value: 'all' },
+                      { label: 'Internships', value: 'internship' },
+                      { label: 'Graduate', value: 'graduate' },
+                    ].map((filter) => (
+                      <button
+                        key={filter.value}
+                        onClick={() => setTypeFilter(filter.value as RoleType | 'all')}
+                        className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+                          typeFilter === filter.value
+                            ? 'bg-indigo-500/20 text-indigo-200 border border-indigo-500/40'
+                            : 'bg-[#1a1a21] text-[#9da0af] border border-[#2a2a35] hover:border-[#3a3a4a]'
+                        }`}
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                    {[
+                      { label: 'Hiring now', value: 'active' },
+                      { label: 'Opening soon', value: 'upcoming' },
+                      { label: 'Predicted', value: 'predicted' },
+                    ].map((filter) => (
+                      <button
+                        key={filter.value}
+                        onClick={() => setStatusFilter(filter.value as RoleStatus | 'all')}
+                        className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
+                          statusFilter === filter.value
+                            ? 'bg-white/5 text-white border border-white/10'
+                            : 'bg-[#0f0f14] text-[#9da0af] border border-[#2a2a35] hover:border-[#3a3a4a]'
+                        }`}
+                      >
+                        {filter.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+                    <div className="space-y-3">
+                      {filteredRoles.map((role) => (
+                        <button
+                          key={role.id}
+                          onClick={() => setSelectedRoleId(role.id)}
+                          className={`group w-full rounded-xl border px-4 py-3 text-left transition-all ${
+                            effectiveSelectedRoleId === role.id
+                              ? 'border-indigo-400/40 bg-indigo-500/10 ring-1 ring-indigo-400/30'
+                              : 'border-[#2a2a35] bg-[#111118] hover:border-[#3a3a4a]'
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#1f1f28] text-xl">
+                              {role.logo}
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <h4 className="truncate text-sm font-semibold text-white">{role.title}</h4>
+                                <span className={`h-2 w-2 rounded-full ${statusStyles[role.status].dot}`} />
+                              </div>
+                              <p className="truncate text-xs text-[#9da0af]">{role.company}</p>
+                              <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-[#9da0af]">
+                                <span className="inline-flex items-center gap-1 rounded-md bg-[#1a1a21] px-2 py-0.5">
+                                  <MapPin className="h-3 w-3" />
+                                  {role.location}
+                                </span>
+                                <span className="inline-flex items-center gap-1 rounded-md bg-[#1a1a21] px-2 py-0.5">
+                                  <Clock className="h-3 w-3" />
+                                  {role.posted}
+                                </span>
+                                <span className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] ${
+                                  role.type === 'internship'
+                                    ? 'bg-indigo-500/10 text-indigo-200'
+                                    : 'bg-purple-500/10 text-purple-200'
+                                }`}>
+                                  {role.type === 'internship' ? 'Internship' : 'Graduate'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${statusStyles[role.status].badge}`}>
+                                {statusStyles[role.status].label}
+                              </span>
+                              <span className="text-xs text-[#9da0af]">{role.match}% match</span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+
+                    {selectedRole && (
+                      <div className="flex h-full flex-col gap-4 rounded-2xl border border-[#2a2a35] bg-[#101018] p-5">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs uppercase tracking-wide text-indigo-300">Role details</p>
+                            <h3 className="text-xl font-semibold text-white">{selectedRole.title}</h3>
+                            <p className="text-sm text-[#9da0af]">{selectedRole.company}</p>
+                            <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-medium">
+                              <span className={`rounded-full px-2 py-0.5 ${statusStyles[selectedRole.status].badge}`}>
+                                {statusStyles[selectedRole.status].label}
+                              </span>
+                              <span className="rounded-full border border-[#2a2a35] px-2 py-0.5 text-indigo-200">{selectedRole.type === 'internship' ? 'Internship' : 'Graduate'}</span>
+                              <span className="rounded-full border border-[#2a2a35] px-2 py-0.5 text-[#cbd0e2]">{selectedRole.timeline}</span>
+                            </div>
+                          </div>
+                          <button className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-600">
+                            <ExternalLink className="h-4 w-4" />
+                            View listing
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 text-sm text-[#9da0af]">
+                          <span className="flex items-center gap-2 rounded-lg border border-[#1f1f28] bg-[#14141c] px-3 py-2">
+                            <MapPin className="h-4 w-4 text-indigo-300" />
+                            {selectedRole.location}
+                          </span>
+                          <span className="flex items-center gap-2 rounded-lg border border-[#1f1f28] bg-[#14141c] px-3 py-2">
+                            <DollarSign className="h-4 w-4 text-indigo-300" />
+                            {selectedRole.salary}
+                          </span>
+                          <span className="flex items-center gap-2 rounded-lg border border-[#1f1f28] bg-[#14141c] px-3 py-2">
+                            <Clock className="h-4 w-4 text-indigo-300" />
+                            {selectedRole.posted}
+                          </span>
+                          <span className="flex items-center gap-2 rounded-lg border border-[#1f1f28] bg-[#14141c] px-3 py-2">
+                            <Bell className="h-4 w-4 text-indigo-300" />
+                            Alerts enabled
+                          </span>
+                        </div>
+
+                        <div className="rounded-xl border border-[#1f1f28] bg-[#0f0f14] p-4">
+                          <div className="mb-3 flex items-center justify-between text-sm text-white">
+                            <span className="font-semibold">Match breakdown</span>
+                            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-200">{selectedRole.match}%</span>
+                          </div>
+                          <div className="mb-3 h-2 w-full overflow-hidden rounded-full bg-[#1a1a21]">
+                            <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400" style={{ width: `${selectedRole.match}%` }} />
+                          </div>
+                          <div className="flex flex-wrap gap-2 text-[11px] text-[#cbd0e2]">
+                            {selectedRole.workRights.map((right) => (
+                              <span key={right} className="inline-flex items-center gap-1 rounded-full border border-[#2a2a35] px-2 py-0.5">
+                                <Shield className="h-3 w-3 text-amber-200" />
+                                {right}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-sm font-semibold text-white">What you&apos;ll do</p>
+                          <ul className="space-y-2 text-sm text-[#cbd0e2]">
+                            {selectedRole.highlights.map((item) => (
+                              <li key={item} className="flex items-start gap-2">
+                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-indigo-300" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-[#1f1f28] bg-[#0f0f14] px-4 py-3 text-sm text-[#cbd0e2]">
+                          <div className="flex items-center gap-2">
+                            <span className="h-2 w-2 rounded-full bg-indigo-400" />
+                            Application steps are tracked inside the app.
+                          </div>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-200">
+                            <ChevronRight className="h-4 w-4" />
+                            Apply → HR Screen → Technical → Offer
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'profile' && (
+                <div className="space-y-6">
+                  <div className="relative overflow-hidden rounded-2xl border border-[#2a2a35] bg-gradient-to-r from-indigo-500/10 via-[#111118] to-purple-500/10 p-6">
+                    <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-indigo-500/20 blur-3xl" />
+                    <div className="pointer-events-none absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-purple-500/15 blur-3xl" />
+
+                    <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 text-2xl font-bold text-white shadow-lg shadow-indigo-500/30">
+                          {profilePreview.initials}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-semibold text-white">{profilePreview.name}</h3>
+                          <p className="text-sm text-[#cbd0e2]">{profilePreview.degree}</p>
+                          <p className="text-xs text-indigo-200">{profilePreview.focus}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs font-medium">
+                        <span className="rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-indigo-100">
+                          <MapPin className="mr-1 inline h-3 w-3" />
+                          {profilePreview.location}
+                        </span>
+                        <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-amber-100">
+                          <Shield className="mr-1 inline h-3 w-3" />
+                          {profilePreview.workRights}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-xl border border-[#2a2a35] bg-[#101018] p-4">
+                      <div className="mb-3 flex items-center justify-between text-sm text-[#9da0af]">
+                        <span>Employability</span>
+                        <TrendingUp className="h-4 w-4 text-indigo-300" />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="relative h-16 w-16 rounded-full"
+                          style={{
+                            backgroundImage: `conic-gradient(#7c3aed ${profilePreview.employability}%, rgba(255,255,255,0.06) ${profilePreview.employability}%)`,
+                          }}
+                        >
+                          <div className="absolute inset-2 flex items-center justify-center rounded-full bg-[#0f0f14] text-center">
+                            <span className="text-lg font-semibold text-white">{profilePreview.employability}</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-white">Strong</p>
+                          <p className="text-xs text-[#9da0af]">Add 1 more project to hit 95%</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-[#2a2a35] bg-[#101018] p-4">
+                      <div className="mb-2 flex items-center justify-between text-sm text-[#9da0af]">
+                        <span>Applications</span>
+                        <Award className="h-4 w-4 text-purple-300" />
+                      </div>
+                      <p className="text-2xl font-semibold text-white">{profilePreview.applications}</p>
+                      <p className="text-xs text-[#9da0af]">Tracked inside the dashboard</p>
+                    </div>
+                    <div className="rounded-xl border border-[#2a2a35] bg-[#101018] p-4">
+                      <div className="mb-2 flex items-center justify-between text-sm text-[#9da0af]">
+                        <span>Events saved</span>
+                        <Calendar className="h-4 w-4 text-cyan-200" />
+                      </div>
+                      <p className="text-2xl font-semibold text-white">{profilePreview.events}</p>
+                      <p className="text-xs text-[#9da0af]">Workshops and info sessions</p>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+                    <div className="space-y-4 rounded-2xl border border-[#2a2a35] bg-[#0f0f14] p-5">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-indigo-300">Career preferences</p>
+                          <h4 className="text-lg font-semibold text-white">Role interests & stack</h4>
+                        </div>
+                        <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-200">Auto-syncs to matches</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-sm">
+                        {profilePreview.rolePreferences.map((pref) => (
+                          <span key={pref} className="rounded-full border border-[#2a2a35] bg-[#1a1a21] px-3 py-1 text-[#cbd0e2]">
+                            {pref}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-sm">
+                        {profilePreview.skills.map((skill) => (
+                          <span key={skill} className="rounded-md border border-[#2a2a35] bg-[#111118] px-3 py-1 text-[#cbd0e2]">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="rounded-xl border border-[#1f1f28] bg-[#0f0f14] p-4">
+                        <p className="text-sm font-semibold text-white">Next best actions</p>
+                        <ul className="mt-3 space-y-2 text-sm text-[#cbd0e2]">
+                          {profilePreview.checklist.map((item) => (
+                            <li key={item} className="flex items-start gap-2">
+                              <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-300" />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="rounded-2xl border border-[#2a2a35] bg-[#101018] p-5">
+                        <p className="text-sm font-semibold text-white">Contact & links</p>
+                        <div className="mt-3 space-y-3 text-sm text-[#cbd0e2]">
+                          <div className="flex items-center gap-3">
+                            <Mail className="h-4 w-4 text-indigo-300" />
+                            <span>{profilePreview.links.email}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Linkedin className="h-4 w-4 text-indigo-300" />
+                            <span>{profilePreview.links.linkedin}</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Github className="h-4 w-4 text-indigo-300" />
+                            <span>{profilePreview.links.github}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#2a2a35] bg-[#101018] p-5">
+                        <p className="text-sm font-semibold text-white">Profile completion</p>
+                        <div className="mt-3 flex items-center gap-4">
+                          <div
+                            className="relative h-16 w-16 rounded-full"
+                            style={{
+                              backgroundImage: `conic-gradient(#22c55e ${profilePreview.completion}%, rgba(255,255,255,0.06) ${profilePreview.completion}%)`,
+                            }}
+                          >
+                            <div className="absolute inset-2 flex items-center justify-center rounded-full bg-[#0f0f14] text-center">
+                              <span className="text-lg font-semibold text-white">{profilePreview.completion}%</span>
+                            </div>
+                          </div>
+                          <div className="space-y-1 text-sm text-[#cbd0e2]">
+                            <p>Add one more project and update work rights to hit 100%.</p>
+                            <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-semibold text-emerald-200">Auto-saves</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'newsletter' && (
+                <div className="space-y-4">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div>
+                      <h3 className="mb-1 text-2xl font-bold text-white">Weekly Newsletter</h3>
+                      <p className="text-[#6a6a7a]">Tailored for Year 3 • Computer Science • University of Sydney</p>
+                    </div>
+                    <div className="rounded-lg bg-indigo-500/10 px-3 py-1.5 text-sm font-medium text-indigo-400">This Week</div>
+                  </div>
+
+                  <div className="mb-6 flex gap-2 border-b border-[#2a2a35]">
+                    <button
+                      onClick={() => setActiveNewsletterTab('jobs')}
+                      className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                        activeNewsletterTab === 'jobs'
+                          ? 'border-indigo-400 text-indigo-400'
+                          : 'border-transparent text-[#6a6a7a] hover:text-[#8a8a9a]'
+                      }`}
+                    >
+                      <Briefcase className="h-4 w-4" />
                       <span>Job Opportunities</span>
-                      <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 text-xs font-semibold">8</span>
+                      <span className="rounded-full bg-indigo-500/20 px-2 py-0.5 text-xs font-semibold text-indigo-400">8</span>
                     </button>
                     <button
                       onClick={() => setActiveNewsletterTab('events')}
-                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                      className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                         activeNewsletterTab === 'events'
-                          ? 'text-purple-400 border-purple-400'
-                          : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
+                          ? 'border-purple-400 text-purple-400'
+                          : 'border-transparent text-[#6a6a7a] hover:text-[#8a8a9a]'
                       }`}
                     >
-                      <Calendar className="w-4 h-4" />
+                      <Calendar className="h-4 w-4" />
                       <span>Events</span>
-                      <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 text-xs font-semibold">5</span>
+                      <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs font-semibold text-purple-400">5</span>
                     </button>
                     <button
                       onClick={() => setActiveNewsletterTab('extracurriculars')}
-                      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors border-b-2 ${
+                      className={`flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                         activeNewsletterTab === 'extracurriculars'
-                          ? 'text-cyan-400 border-cyan-400'
-                          : 'text-[#6a6a7a] border-transparent hover:text-[#8a8a9a]'
+                          ? 'border-cyan-400 text-cyan-400'
+                          : 'border-transparent text-[#6a6a7a] hover:text-[#8a8a9a]'
                       }`}
                     >
-                      <Trophy className="w-4 h-4" />
+                      <Trophy className="h-4 w-4" />
                       <span>Extracurriculars</span>
-                      <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-semibold">4</span>
+                      <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-xs font-semibold text-cyan-400">4</span>
                     </button>
                   </div>
 
-                  {/* Job Opportunities Section */}
                   {activeNewsletterTab === 'jobs' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                          {
-                            title: 'Summer Intern - Software Engineering',
-                            company: 'Atlassian',
-                            location: 'Sydney, NSW',
-                            salary: '$35-42/hr',
-                            type: 'Internship',
-                            match: 95,
-                            tag: 'Hot Match'
-                          },
-                          {
-                            title: '2026 Graduate Program',
-                            company: 'Canva',
-                            location: 'Sydney, NSW',
-                            salary: '$80-95k',
-                            type: 'Graduate',
-                            match: 92,
-                            tag: 'Closing Soon'
-                          },
-                          {
-                            title: 'Data Engineering Intern',
-                            company: 'Xero',
-                            location: 'Wellington, NZ',
-                            salary: '$28-35/hr',
-                            type: 'Internship',
-                            match: 88,
-                            tag: null
-                          },
-                          {
-                            title: 'Graduate Software Developer',
-                            company: 'REA Group',
-                            location: 'Melbourne, VIC',
-                            salary: '$80-90k',
-                            type: 'Graduate',
-                            match: 85,
-                            tag: null
-                          },
-                          {
-                            title: 'ML Engineering Intern',
-                            company: 'Zip Co',
-                            location: 'Sydney, NSW',
-                            salary: '$32-40/hr',
-                            type: 'Internship',
-                            match: 83,
-                            tag: 'New'
-                          },
-                          {
-                            title: 'Technology Graduate',
-                            company: 'CommBank',
-                            location: 'Sydney, NSW',
-                            salary: '$75-85k',
-                            type: 'Graduate',
-                            match: 80,
-                            tag: null
-                          },
-                        ].map((job, i) => (
-                          <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-indigo-500/30 transition-all cursor-pointer group">
-                            <div className="flex items-start justify-between mb-2">
-                              <h5 className="font-semibold text-white text-sm group-hover:text-indigo-300 transition-colors flex-1">{job.title}</h5>
-                              {job.tag && (
-                                <span className={`text-xs px-2 py-0.5 rounded ml-2 flex-shrink-0 ${
-                                  job.tag === 'Hot Match' ? 'bg-red-500/10 text-red-400' : 
-                                  job.tag === 'Closing Soon' ? 'bg-yellow-500/10 text-yellow-400' :
-                                  'bg-green-500/10 text-green-400'
-                                }`}>
-                                  {job.tag}
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-[#8a8a9a] text-sm mb-2">{job.company}</p>
-                            <div className="flex items-center gap-3 text-[#6a6a7a] text-xs mb-2">
-                              <span className="flex items-center gap-1">
-                                <MapPin className="w-3 h-3" />
-                                {job.location}
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <DollarSign className="w-3 h-3" />
-                                {job.salary}
-                              </span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                job.type === 'Internship' 
-                                  ? 'bg-indigo-500/10 text-indigo-400' 
-                                  : 'bg-purple-500/10 text-purple-400'
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {[
+                        {
+                          title: 'Summer Intern - Software Engineering',
+                          company: 'Atlassian',
+                          location: 'Sydney, NSW',
+                          salary: '$35-42/hr',
+                          type: 'Internship',
+                          match: 95,
+                          tag: 'Hot Match',
+                        },
+                        {
+                          title: '2026 Graduate Program',
+                          company: 'Canva',
+                          location: 'Sydney, NSW',
+                          salary: '$80-95k',
+                          type: 'Graduate',
+                          match: 92,
+                          tag: 'Closing Soon',
+                        },
+                        {
+                          title: 'Data Engineering Intern',
+                          company: 'Xero',
+                          location: 'Wellington, NZ',
+                          salary: '$28-35/hr',
+                          type: 'Internship',
+                          match: 88,
+                          tag: null,
+                        },
+                        {
+                          title: 'Graduate Software Developer',
+                          company: 'REA Group',
+                          location: 'Melbourne, VIC',
+                          salary: '$80-90k',
+                          type: 'Graduate',
+                          match: 85,
+                          tag: null,
+                        },
+                        {
+                          title: 'ML Engineering Intern',
+                          company: 'Zip Co',
+                          location: 'Sydney, NSW',
+                          salary: '$32-40/hr',
+                          type: 'Internship',
+                          match: 83,
+                          tag: 'New',
+                        },
+                        {
+                          title: 'Technology Graduate',
+                          company: 'CommBank',
+                          location: 'Sydney, NSW',
+                          salary: '$75-85k',
+                          type: 'Graduate',
+                          match: 80,
+                          tag: null,
+                        },
+                      ].map((job) => (
+                        <div key={job.title} className="group cursor-pointer rounded-lg border border-[#2a2a35] bg-[#111118] p-4 transition hover:border-indigo-500/40">
+                          <div className="mb-2 flex items-start justify-between">
+                            <h5 className="flex-1 text-sm font-semibold text-white transition-colors group-hover:text-indigo-200">{job.title}</h5>
+                            {job.tag && (
+                              <span className={`ml-2 rounded px-2 py-0.5 text-xs ${
+                                job.tag === 'Hot Match'
+                                  ? 'bg-red-500/10 text-red-400'
+                                  : job.tag === 'Closing Soon'
+                                    ? 'bg-yellow-500/10 text-yellow-300'
+                                    : 'bg-green-500/10 text-green-300'
                               }`}>
-                                {job.type}
+                                {job.tag}
                               </span>
-                              <span className="text-[#6a6a7a] text-xs">{job.match}% match</span>
-                            </div>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                          <p className="mb-2 text-sm text-[#9da0af]">{job.company}</p>
+                          <div className="mb-2 flex items-center gap-3 text-xs text-[#6a6a7a]">
+                            <span className="inline-flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {job.location}
+                            </span>
+                            <span className="inline-flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />
+                              {job.salary}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className={`rounded px-2 py-0.5 ${
+                              job.type === 'Internship'
+                                ? 'bg-indigo-500/10 text-indigo-300'
+                                : 'bg-purple-500/10 text-purple-300'
+                            }`}>
+                              {job.type}
+                            </span>
+                            <span className="text-[#9da0af]">{job.match}% match</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
 
-                  {/* Events Section */}
                   {activeNewsletterTab === 'events' && (
                     <div className="space-y-3">
                       {[
@@ -463,7 +752,7 @@ export default function AppShowcase() {
                           time: '6:00 PM',
                           location: 'USYD - Quadrangle Building',
                           attendees: 234,
-                          type: 'Tech Talk'
+                          type: 'Tech Talk',
                         },
                         {
                           title: 'Atlassian Career Night',
@@ -471,7 +760,7 @@ export default function AppShowcase() {
                           time: '5:30 PM',
                           location: 'Atlassian Sydney Office',
                           attendees: 156,
-                          type: 'Career Event'
+                          type: 'Career Event',
                         },
                         {
                           title: 'AWS Cloud Computing Workshop',
@@ -479,7 +768,7 @@ export default function AppShowcase() {
                           time: '2:00 PM',
                           location: 'Online',
                           attendees: 890,
-                          type: 'Workshop'
+                          type: 'Workshop',
                         },
                         {
                           title: 'Canva Design & Engineering Meetup',
@@ -487,7 +776,7 @@ export default function AppShowcase() {
                           time: '6:00 PM',
                           location: 'Canva Sydney',
                           attendees: 78,
-                          type: 'Networking'
+                          type: 'Networking',
                         },
                         {
                           title: 'Microsoft Student Summit',
@@ -495,33 +784,29 @@ export default function AppShowcase() {
                           time: '9:00 AM',
                           location: 'Microsoft Sydney',
                           attendees: 320,
-                          type: 'Conference'
+                          type: 'Conference',
                         },
-                      ].map((event, i) => (
-                        <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-purple-500/30 transition-all cursor-pointer">
-                          <div className="flex items-start justify-between mb-2">
+                      ].map((event) => (
+                        <div key={event.title} className="rounded-lg border border-[#2a2a35] bg-[#111118] p-4 transition hover:border-purple-500/40">
+                          <div className="mb-2 flex items-start justify-between">
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h5 className="font-semibold text-white text-sm">{event.title}</h5>
-                                <span className="text-xs px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">
-                                  {event.type}
-                                </span>
+                              <div className="mb-1 flex items-center gap-2">
+                                <h5 className="text-sm font-semibold text-white">{event.title}</h5>
+                                <span className="rounded bg-purple-500/10 px-2 py-0.5 text-xs text-purple-300">{event.type}</span>
                               </div>
-                              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[#6a6a7a] text-xs">
-                                <span className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-[#6a6a7a]">
+                                <span className="inline-flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
                                   {event.date} • {event.time}
                                 </span>
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="w-3 h-3" />
+                                <span className="inline-flex items-center gap-1">
+                                  <MapPin className="h-3 w-3" />
                                   {event.location}
                                 </span>
-                              </div>
-                            </div>
-                            <div className="text-right ml-3 flex-shrink-0">
-                              <div className="flex items-center gap-1 text-[#6a6a7a] text-xs">
-                                <Users className="w-3 h-3" />
-                                <span>{event.attendees}</span>
+                                <span className="inline-flex items-center gap-1">
+                                  <Users className="h-3 w-3" />
+                                  {event.attendees} attending
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -530,81 +815,73 @@ export default function AppShowcase() {
                     </div>
                   )}
 
-                  {/* Extracurriculars Section */}
                   {activeNewsletterTab === 'extracurriculars' && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                          {
-                            title: 'USYD Computer Science Society',
-                            type: 'Society',
-                            members: '2.4k members',
-                            description: 'The premier tech society at USYD',
-                            tag: 'Popular'
-                          },
-                          {
-                            title: 'Google Developer Student Club',
-                            type: 'Club',
-                            members: '890 members',
-                            description: 'Learn and build with Google tech',
-                            tag: 'Active'
-                          },
-                          {
-                            title: 'HackSydney 2026',
-                            type: 'Hackathon',
-                            members: 'Feb 15-17',
-                            description: 'Sydney\'s biggest student hackathon',
-                            tag: 'Registration Open'
-                          },
-                          {
-                            title: 'Women in Tech USYD',
-                            type: 'Society',
-                            members: '1.2k members',
-                            description: 'Supporting women in technology',
-                            tag: 'Welcoming'
-                          },
-                          {
-                            title: 'USYD Robotics Club',
-                            type: 'Club',
-                            members: '650 members',
-                            description: 'Build robots and compete',
-                            tag: 'Hands-on'
-                          },
-                          {
-                            title: 'AWS Cloud Club',
-                            type: 'Club',
-                            members: '430 members',
-                            description: 'Master cloud computing skills',
-                            tag: 'Technical'
-                          },
-                        ].map((extra, i) => (
-                          <div key={i} className="bg-[#1a1a21] rounded-lg p-4 border border-[#2a2a35] hover:border-cyan-500/30 transition-all cursor-pointer group">
-                            <div className="flex items-start justify-between mb-2">
-                              <h5 className="font-semibold text-white text-sm group-hover:text-cyan-300 transition-colors">{extra.title}</h5>
-                              <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 flex-shrink-0 ml-2">
-                                {extra.tag}
-                              </span>
-                            </div>
-                            <p className="text-[#6a6a7a] text-xs mb-3">{extra.description}</p>
-                            <div className="flex items-center justify-between">
-                              <span className="text-[#8a8a9a] text-xs">{extra.type}</span>
-                              <span className="text-[#6a6a7a] text-xs flex items-center gap-1">
-                                <GraduationCap className="w-3 h-3" />
-                                {extra.members}
-                              </span>
-                            </div>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      {[
+                        {
+                          title: 'USYD Computer Science Society',
+                          type: 'Society',
+                          members: '2.4k members',
+                          description: 'Workshops, hackathons, and career nights every month.',
+                          tag: 'Popular',
+                        },
+                        {
+                          title: 'Google Developer Student Club',
+                          type: 'Club',
+                          members: '890 members',
+                          description: 'Build with Google tech, ship projects, get swag.',
+                          tag: 'Active',
+                        },
+                        {
+                          title: 'HackSydney 2026',
+                          type: 'Hackathon',
+                          members: 'Feb 15-17',
+                          description: "Sydney's biggest student hackathon.",
+                          tag: 'Registration Open',
+                        },
+                        {
+                          title: 'Women in Tech USYD',
+                          type: 'Society',
+                          members: '1.2k members',
+                          description: 'Mentorship, interview prep, and speaker series.',
+                          tag: 'Welcoming',
+                        },
+                        {
+                          title: 'USYD Robotics Club',
+                          type: 'Club',
+                          members: '650 members',
+                          description: 'Hands-on robotics builds and competitions.',
+                          tag: 'Hands-on',
+                        },
+                        {
+                          title: 'AWS Cloud Club',
+                          type: 'Club',
+                          members: '430 members',
+                          description: 'Labs, certifications, and cloud resume challenges.',
+                          tag: 'Technical',
+                        },
+                      ].map((extra) => (
+                        <div key={extra.title} className="group cursor-pointer rounded-lg border border-[#2a2a35] bg-[#111118] p-4 transition hover:border-cyan-500/40">
+                          <div className="mb-2 flex items-start justify-between">
+                            <h5 className="text-sm font-semibold text-white transition-colors group-hover:text-cyan-200">{extra.title}</h5>
+                            <span className="rounded bg-cyan-500/10 px-2 py-0.5 text-xs text-cyan-300">{extra.tag}</span>
                           </div>
-                        ))}
-                      </div>
+                          <p className="mb-2 text-sm text-[#9da0af]">{extra.description}</p>
+                          <div className="flex items-center justify-between text-xs text-[#6a6a7a]">
+                            <span>{extra.type}</span>
+                            <span className="inline-flex items-center gap-1">
+                              <GraduationCap className="h-3 w-3" />
+                              {extra.members}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
               )}
             </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         </div>
       </div>
     </section>

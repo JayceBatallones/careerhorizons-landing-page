@@ -33,15 +33,15 @@ export default function CompanyCarousel() {
               {companies.map((company, index) => (
                 <div
                   key={`first-${index}`}
-                  className="flex-shrink-0 grayscale opacity-40 hover:opacity-60 transition-opacity duration-300 min-w-[120px] flex items-center justify-center"
+                  className="flex-shrink-0 grayscale opacity-40 hover:opacity-60 transition-opacity duration-300 min-w-[120px] min-h-[48px] flex items-center justify-center py-1"
                   title={company.name}
                 >
                   <Image
                     src={company.logo}
                     alt={company.name}
                     width={120}
-                    height={48}
-                    className="h-10 w-auto max-w-[120px]"
+                    height={56}
+                    className="h-12 w-auto max-w-[120px] object-contain"
                   />
                 </div>
               ))}
@@ -51,15 +51,15 @@ export default function CompanyCarousel() {
               {companies.map((company, index) => (
                 <div
                   key={`second-${index}`}
-                  className="flex-shrink-0 grayscale opacity-40 hover:opacity-60 transition-opacity duration-300 min-w-[120px] flex items-center justify-center"
+                  className="flex-shrink-0 grayscale opacity-40 hover:opacity-60 transition-opacity duration-300 min-w-[120px] min-h-[48px] flex items-center justify-center py-1"
                   title={company.name}
                 >
                   <Image
                     src={company.logo}
                     alt={company.name}
                     width={120}
-                    height={48}
-                    className="h-10 w-auto max-w-[120px]"
+                    height={56}
+                    className="h-12 w-auto max-w-[120px] object-contain"
                   />
                 </div>
               ))}

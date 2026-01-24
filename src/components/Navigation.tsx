@@ -5,9 +5,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 
+const navLinks = [
+  { href: '#how-it-works', label: 'How It Works', sectionId: 'how-it-works' },
+  { href: '#testimonials', label: 'Testimonials', sectionId: 'testimonials' },
+  { href: '#faq', label: 'FAQ', sectionId: 'faq' },
+];
+
 export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,11 +25,46 @@ export default function Navigation() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: '#features', label: 'Features' },
-    { href: '#how-it-works', label: 'How It Works' },
-    { href: '#pricing', label: 'Pricing' },
-  ];
+  useEffect(() => {
+    const sections = navLinks
+      .map((link) => document.getElementById(link.sectionId))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (!sections.length) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: '-45% 0px -45% 0px',
+        threshold: 0.1,
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    const handleHashChange = () => {
+      const sectionId = window.location.hash.replace('#', '');
+      if (sectionId) {
+        setActiveSection(sectionId);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   return (
     <nav
@@ -54,7 +97,11 @@ export default function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[#8a8a9a] hover:text-white text-sm font-medium transition-colors"
+                className={`text-sm font-medium transition-colors ${
+                  activeSection === link.sectionId
+                    ? 'text-white'
+                    : 'text-[#8a8a9a] hover:text-white'
+                }`}
               >
                 {link.label}
               </Link>
@@ -94,7 +141,11 @@ export default function Navigation() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-[#8a8a9a] hover:text-white font-medium py-2 transition-colors"
+                className={`block font-medium py-2 transition-colors ${
+                  activeSection === link.sectionId
+                    ? 'text-white'
+                    : 'text-[#8a8a9a] hover:text-white'
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.label}
